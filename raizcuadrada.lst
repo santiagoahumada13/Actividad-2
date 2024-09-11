@@ -1,0 +1,48 @@
+---------------------------------------------
+OSHONSOFT Z80 ASSEMBLER LISTING
+Line   Addr Opcode      Label   Instruction
+---------------------------------------------
+0001   0000             	org 0000h
+0002   0000 06 04       	ld b,0x4	;numero binario en bcd
+0003   0002 78          	ld a,b ;se inicializan variables
+0004   0003 CD 1E 00    	call bcd_bin
+0005   0006             
+0006   0006 57          	ld d,a
+0007   0007 0E 00       	ld c,0x00
+0008   0009             
+0009   0009             calc_raiz:
+0010   0009 59          	ld e,c
+0011   000A CD 16 00    	call mult
+0012   000D             
+0013   000D BA          	cp d ; compara el resultado con el umero original en d
+0014   000E 28 05       	jr z, done ;si el resultado coincide, la raiz esta en c
+0015   0010 30 00       	jr nc, try ;isi el resultado es mayor, es la respuesta
+0016   0012             try:
+0017   0012 0C          	inc c ;incrementa c para probar el siguiente numero
+0018   0013 18 F4       	jr calc_raiz ;repite ciclo
+0019   0015             done:
+0020   0015 76          	halt ;detiene del programa
+0021   0016             mult:
+0022   0016 3E 00       	ld a,0x00 ;inicializa a para la suma
+0023   0018 43          	ld b,e ;carga e en b como multiplicador
+0024   0019 6B          	ld l,e ; carga e en l como multiplicando
+0025   001A             mult_loop:
+0026   001A 85          	add a,l ;suma a con l
+0027   001B 10 FD       	djnz mult_loop ;decrementa b y repite si b no es igual a 0
+0028   001D C9          	ret
+0029   001E             ;subrutina para convertir bcd a binario
+0030   001E             bcd_bin:
+0031   001E 26 00       	ld h,0 ;reincia h
+0032   0020 6F          	ld l,a ; carga el valor bcd en l
+0033   0021 E6 F0       	and 0xF0 ; aisla los 4 bits mas altos
+0034   0023 0F          	rrca ;rota a la derecha 4 bits
+0035   0024 0F          	rrca
+0036   0025 0F          	rrca
+0037   0026 0F          	rrca
+0038   0027 67          	ld h,a
+0039   0028 7D          	ld a,l
+0040   0029 E6 0F       	and 0x0F
+0041   002B 84          	add a,h
+0042   002C C9          	ret
+0043   002D             end
+Number of errors = 0
